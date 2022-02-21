@@ -1,0 +1,23 @@
+version: "3"
+services:
+  master:
+    image: mongo
+    links:
+      - slave
+    networks:
+      - mongo-replset
+    volumes:
+      - ./init-repl-set.sh:/docker-entrypoint-initdb.d/init-repl-set.sh
+    command: mongod --replSet replset
+    ports:
+      - "27017:27017"
+  slave:
+    image: mongo
+    networks:
+      - mongo-replset
+    command: mongod --replSet replset --port 27018
+    ports:
+      - "27018:27018"
+networks:
+  mongo-replset:
+    driver: bridge
